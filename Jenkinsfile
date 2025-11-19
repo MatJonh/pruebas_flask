@@ -4,7 +4,7 @@ pipeline {
     environment {
         VENV_PATH = "${WORKSPACE}/flask_app/Scripts/activate"
         DOCKER_IMAGE = "flask-ci-tasks"
-        APP_PORT = "5000"
+        APP_PORT = "8080"
         // Configura tu correo o token de Slack/Teams según prefieras
         EMAIL = "mateo51804084@gmail.com"
     }
