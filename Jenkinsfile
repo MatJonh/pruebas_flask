@@ -6,7 +6,7 @@ pipeline {
         DOCKER_IMAGE = "flask-ci-tasks"
         APP_PORT = "5000"
         // Configura tu correo o token de Slack/Teams según prefieras
-        EMAIL = "tu_correo@ejemplo.com"
+        EMAIL = "mateo51804084@gmail.com"
     }
 
     triggers {
