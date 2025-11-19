@@ -12,7 +12,7 @@ pipeline {
             steps {
                 git branch: 'main',
                     credentialsId: 'github-token',
-                    url: 'https://github.com/MatJonh/pruebas_flask'
+                    url: 'https://github.com/MatJonh/pruebas_flask.git'
                     // url: 'https://github.com/TU_USUARIO/TU_REPO.git'
             }
         }
@@ -20,8 +20,8 @@ pipeline {
         stage('Install Python dependencies') {
             steps {
                 sh '''
-                python3 -m venv venv
-                . venv/bin/activate
+                python3 -m venv flask_app
+                . flask_app/bin/activate
                 pip install -r requirements.txt
                 '''
             }
@@ -30,7 +30,7 @@ pipeline {
         stage('Run Tests') {
             steps {
                 sh '''
-                . venv/bin/activate
+                . flask_app/bin/activate
                 pytest -q
                 '''
             }
