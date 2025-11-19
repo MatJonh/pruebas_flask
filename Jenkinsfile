@@ -2,68 +2,67 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB = credentials('dockerhub')
-        IMAGE_NAME = "mateojuan/flask_api"
+        VENV_PATH = "${WORKSPACE}/flask_app/Scripts/activate"
+        DOCKER_IMAGE = "flask-ci-tasks"
+        APP_PORT = "5000"
+        // Configura tu correo o token de Slack/Teams según prefieras
+        EMAIL = "tu_correo@ejemplo.com"
+    }
+
+    triggers {
+        // Dispara automáticamente con el webhook de GitHub
+        githubPush()
     }
 
     stages {
-
-        stage('Checkout') {
+        stage('Preparar entorno') {
             steps {
-                git branch: 'main',
-                    credentialsId: 'github-token',
-                    url: 'https://github.com/MatJonh/pruebas_flask.git'
-                    // url: 'https://github.com/TU_USUARIO/TU_REPO.git'
+                echo "Activando entorno virtual y instalando dependencias..."
+                sh """
+                . ${VENV_PATH} && pip install --upgrade pip
+                . ${VENV_PATH} && pip install -r requirements.txt
+                """
             }
         }
 
-        stage('Install Python dependencies') {
+        stage('Ejecutar pruebas') {
             steps {
-                sh '''
-                python3 -m venv flask_app
-                . flask_app/bin/activate
-                pip install -r requirements.txt
-                '''
+                echo "Ejecutando pruebas unitarias con pytest..."
+                sh ". ${VENV_PATH} && pytest -v"
             }
         }
 
-        stage('Run Tests') {
+        stage('Construir Docker') {
             steps {
-                sh '''
-                . flask_app/bin/activate
-                pytest -q
-                '''
+                echo "Construyendo imagen Docker..."
+                sh "docker build -t ${DOCKER_IMAGE} ."
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Desplegar Docker') {
             steps {
-                sh '''
-                docker build -t ${IMAGE_NAME}:latest .
-                '''
+                echo "Deteniendo contenedor previo (si existe) y desplegando..."
+                sh """
+                docker stop ${DOCKER_IMAGE} || true
+                docker rm ${DOCKER_IMAGE} || true
+                docker run -d -p ${APP_PORT}:5000 --name ${DOCKER_IMAGE} ${DOCKER_IMAGE}
+                """
             }
         }
+    }
 
-        stage('Login to DockerHub') {
-            steps {
-                sh '''
-                echo "$DOCKERHUB_PSW" | docker login -u "$DOCKERHUB_USR" --password-stdin
-                '''
-            }
+    post {
+        success {
+            echo "Pipeline completado correctamente ✅"
+            mail to: "${EMAIL}",
+                 subject: "Pipeline Exitoso: ${JOB_NAME} #${BUILD_NUMBER}",
+                 body: "El pipeline se completó correctamente.\nRevisa Jenkins para más detalles."
         }
-
-        stage('Push Image') {
-            steps {
-                sh '''
-                docker push ${IMAGE_NAME}:latest
-                '''
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                echo "Aquí puedes conectar con Railway, Render o servidor propio"
-            }
+        failure {
+            echo "Hubo errores durante la ejecución ❌"
+            mail to: "${EMAIL}",
+                 subject: "Pipeline Fallido: ${JOB_NAME} #${BUILD_NUMBER}",
+                 body: "El pipeline ha fallado.\nRevisa Jenkins para más detalles."
         }
     }
 }
