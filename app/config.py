@@ -1,16 +1,11 @@
-# import os
-
-# class Config:
-    # SQLALCHEMY_DATABASE_URI = "sqlite:///database.db"
-    # SQLALCHEMY_TRACK_MODIFICATIONS = False
-    # SECRET_KEY = "supersecretkey"
-
-
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
 class Config:
-    SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "sqlite:///app.db")
+    SQLALCHEMY_DATABASE_URI = os.getenv(
+        "DATABASE_URL",
+        "postgresql://postgres:6288@localhost:5432/flask_db"
+    )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
