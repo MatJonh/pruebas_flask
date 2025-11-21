@@ -30,7 +30,7 @@ def create_app():
     # Ruta principal
     @app.route("/")
     def home():
-        return "App Flask funcionando correctamente 🎉"
+        return "La aplicación está funcionando correctamente."
 
     return app
  
