@@ -6,3 +6,6 @@ app = create_app()
 print("Base en uso:", app.config["SQLALCHEMY_DATABASE_URI"])
 
 
+
+# comentario nuevo
+
