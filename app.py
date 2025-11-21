@@ -33,3 +33,4 @@ def create_app():
         return "App Flask funcionando correctamente 🎉"
 
     return app
+ 
