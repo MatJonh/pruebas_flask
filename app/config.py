@@ -6,6 +6,6 @@ load_dotenv()
 class Config:
     SQLALCHEMY_DATABASE_URI = os.getenv(
         "DATABASE_URL",
-        "postgresql://postgres:6288@localhost:5432/flask_db"
+        "postgresql://postgres:6288@localhost:5432/flask"
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
