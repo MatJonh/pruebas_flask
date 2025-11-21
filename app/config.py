@@ -9,3 +9,6 @@ class Config:
         "postgresql://postgres:6288@localhost:5432/flask_db"
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+
+
